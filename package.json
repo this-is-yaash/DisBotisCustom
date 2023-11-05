@@ -1,0 +1,26 @@
+{
+  "name": "disbotiscustom",
+  "version": "1.0.0",
+  "description": "A lightweight & faster discord bot with customized features",
+  "main": "prim.js",
+  "scripts": {
+    "test": "prun"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/this-is-yaash/DisBotisCustom.git"
+  },
+  "keywords": [
+    "bot"
+  ],
+  "author": "Yashwanth Ratha Krishnan",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/this-is-yaash/DisBotisCustom/issues"
+  },
+  "homepage": "https://github.com/this-is-yaash/DisBotisCustom#readme",
+  "dependencies": {
+    "discord.js": "^14.13.0",
+    "dotenv": "^16.3.1"
+  }
+}
