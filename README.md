@@ -13,6 +13,7 @@ Invite the bot to your server by creating a link in [Discord Developer Portal](h
 - Scroll down and **Copy** the link in Generated URL & invite the bot to your *Server*.
 
 ## Run Bot Application
+Paste this code in `prime.js`
 ```
 require('dotenv').config(); // Load environment variables from a .env file
 const { Client, IntentsBitField } = require('discord.js');
@@ -31,8 +32,13 @@ client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}`);
 });
 
-client.login(process.env.BOT_TOKEN); // Replace BOT_TOKEN with your bot's token
-
+client.login(process.env.BOT_TOKEN); // Token keys are stored in .env file
+```
+Run this command in terminal
+```
+node prime.js
 ```
 with this above code, the bot application should run just fine.
 > this will basically run the bot in server, it doesn't have any funcitons implemented in it **yet**!.
+
+Note : Make sure to create `.env` file and add the Token keys and other credentials in it.

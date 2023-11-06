@@ -1,6 +1,6 @@
 require('dotenv').config(); // Load environment variables from a .env file
 const { Client, IntentsBitField } = require('discord.js');
-
+const { handleCommands } = require("./commands/commandHandler")
 const client = new Client({
     intents: [
       IntentsBitField.Flags.Guilds,
@@ -10,6 +10,13 @@ const client = new Client({
       IntentsBitField.Flags.MessageContent,
     ],
   });
+
+// for handling the commands
+client.on('interactionCreate', async (interaction) => {
+  if (!interaction.isCommand()) return;
+  await handleCommands(interaction, client);
+  console.log("Command has been executed")
+});
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}`);
