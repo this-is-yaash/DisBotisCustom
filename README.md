@@ -3,42 +3,13 @@ A lightweight discord bot with customized features.
 
 #### Readme for setting up the bot application.
 
-## Invite Bot
+## Command Implementation
+For fully functional slash commands, there are three important pieces of code that need to be written. [They are](https://discordjs.guide/creating-your-bot/slash-commands.html#before-you-continue):
 
-Invite the bot to your server by creating a link in [Discord Developer Portal](https://discord.com/developers/applications)
+1. The individual command files, containing their definitions and functionality.
+2. The *command handler*, which dynamically reads the files and executes the commands.
+3. The *command deployment script*, to register your slash commands with Discord so they appear in the interface.
 
-- Click OAuth2 dropdown menu > URL Generator.
-- Checkout `bot` in Scopes.
-- Checkout `Administrator` in bot permissions.
-- Scroll down and **Copy** the link in Generated URL & invite the bot to your *Server*.
+>These steps can be done in any order, but all are required before the commands are fully functional.
 
-## Run Bot Application
-Paste this code in `prime.js`
-```
-require('dotenv').config(); // Load environment variables from a .env file
-const { Client, IntentsBitField } = require('discord.js');
-
-const client = new Client({
-    intents: [
-      IntentsBitField.Flags.Guilds,
-      IntentsBitField.Flags.GuildMembers,
-      IntentsBitField.Flags.GuildMessages,
-      IntentsBitField.Flags.GuildVoiceStates,
-      IntentsBitField.Flags.MessageContent,
-    ],
-  });
-
-client.on('ready', () => {
-  console.log(`Logged in as ${client.user.tag}`);
-});
-
-client.login(process.env.BOT_TOKEN); // Token keys are stored in .env file
-```
-Run this command in terminal
-```
-node prime.js
-```
-with this above code, the bot application should run just fine.
-> this will basically run the bot in server, it doesn't have any funcitons implemented in it **yet**!.
-
-Note : Make sure to create `.env` file and add the Token keys and other credentials in it.
+*Refer [discord.js](https://discordjs.guide/creating-your-bot/slash-commands.html#individual-command-files) library to start working on implementing commands*
