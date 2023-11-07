@@ -176,3 +176,21 @@ module.exports = {
 };
 ```
 > Make sure to save these command files inside `subfolders` rather than placing these inside the `folder`.
+
+## Directory Structure
+
+```
+Project/
+├── commands/
+│   ├── fun/
+│   │   ├── ping.js
+│   ├── misc/
+│   │   ├── server.js
+├── node_modules/
+├── deploy-command.js
+├── commandHandler.js
+├── LICENSE
+├── package.json
+├── package-lock.json
+├── README.md
+```
