@@ -14,6 +14,7 @@ const client = new Client({
     ],
   });
 
+//commands handling 
 client.commands = new Collection();
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
@@ -32,7 +33,7 @@ for (const folder of commandFolders) {
 		}
 	}
 }
-  
+// command execution
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
 
