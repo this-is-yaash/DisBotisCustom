@@ -12,7 +12,7 @@ For fully functional slash commands, there are three important pieces of code th
 
 >These steps can be done in any order, but all are required before the commands are fully functional.
 
-*Refer [discord.js](https://discordjs.guide/creating-your-bot/slash-commands.html#individual-command-files) library to start working on implementing commands*
+*Refer [discord.js](https://discordjs.guide/creating-your-bot/slash-commands.html) library to start working on implementing commands*
 
 ## Command Deploy
 
@@ -67,6 +67,7 @@ const rest = new REST().setToken(token);
 	}
 })();
 ```
+> Run this file `node <filename>.js` to registering new command(s) files.
 
 ## Command Handler
 
