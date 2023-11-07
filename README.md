@@ -1,105 +1,72 @@
-# Command Implementation
+## Event Handling
+Refer [discord.js](https://discordjs.guide/creating-your-bot/event-handling.html) library to start working event handling*
 
-Refer [discord.js](https://discordjs.guide/creating-your-bot/slash-commands.html) library to start working on implementing commands*
+Create a directory `Events` and move the bot ready code  & interaction create code to that directory in each files. Implement `module.exports` methods in that files.
 
-## Creating Individual Command Files
-- ping.js
-	```
-	const { SlashCommandBuilder } = require('discord.js');
-
-	module.exports = {
-		data: new SlashCommandBuilder()
-			.setName('ping')
-			.setDescription('Replies with Pong!'),
-		async execute(interaction) {
-			await interaction.reply('Pong!');
-		},
-	};
-	```
-- server.js
-	```
-	const { SlashCommandBuilder } = require('discord.js');
-
-	module.exports = {
-		data: new SlashCommandBuilder()
-			.setName('server')
-			.setDescription('Provides information about the server.'),
-		async execute(interaction) {
-			// interaction.guild is the object representing the Guild in which the command was run
-			await interaction.reply(`This server is ${interaction.guild.name} and has ${interaction.guild.memberCount} members.`);
-		},
-	};
-	```
-## Register Commands (Add/Update)
-
+- events/ready.js
 ```
-const { REST, Routes } = require('discord.js');
-require('dotenv').config(); // Load environment variables from a .env file
-const fs = require('node:fs');
-const path = require('node:path');
+const { Events } = require('discord.js');
+
+module.exports = {
+	name: Events.ClientReady,
+	once: true,
+	execute(client) {
+		console.log(`Ready! Logged in as ${client.user.tag}`);
+	},
+};
 ```
 
-## Command Deploy
+- events/interactionCreate.js
+```
+const { Events } = require('discord.js');
 
-When we run this code, it will register the commands into the bot
+module.exports = {
+	name: Events.InteractionCreate,
+	async execute(interaction) {
+		if (!interaction.isChatInputCommand()) return;
 
-```const { REST, Routes } = require('discord.js');
-const { clientId, guildId, token } = require('./config.json');
-const fs = require('node:fs');
-const path = require('node:path');
+		const command = interaction.client.commands.get(interaction.commandName);
 
-const commands = [];
-// Grab all the command files from the commands directory you created earlier
-const foldersPath = path.join(__dirname, 'commands');
-const commandFolders = fs.readdirSync(foldersPath);
-
-for (const folder of commandFolders) {
-	// Grab all the command files from the commands directory you created earlier
-	const commandsPath = path.join(foldersPath, folder);
-	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-    console.log(commandFiles)
-	// Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment
-	for (const file of commandFiles) {
-		const filePath = path.join(commandsPath, file);
-        // console.log(filePath)
-		const command = require(filePath);
-		if ('data' in command && 'execute' in command) {
-			commands.push(command.data.toJSON());
-		} else {
-			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+		if (!command) {
+			console.error(`No command matching ${interaction.commandName} was found.`);
+			return;
 		}
+
+		try {
+			await command.execute(interaction);
+		} catch (error) {
+			console.error(`Error executing ${interaction.commandName}`);
+			console.error(error);
+		}
+	},
+};
+```
+- event handling code
+```
+const eventsPath = path.join(__dirname, 'events');
+const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
+console.log(`Events :${eventFiles}`)
+
+for (const file of eventFiles) {
+	const filePath = path.join(eventsPath, file);
+	const event = require(filePath);
+	if (event.once) {
+		client.once(event.name, (...args) => event.execute(...args));
+	} else {
+		client.on(event.name, (...args) => event.execute(...args));
 	}
 }
-// Construct and prepare an instance of the REST module
-
-const rest = new REST().setToken(process.env.BOT_TOKEN);
-
-// and deploy your commands!
-(async () => {
-	try {
-		console.log(`Started refreshing ${commands.length} application (/) commands.`);
-
-		// The put method is used to fully refresh all commands in the guild with the current set
-		const data = await rest.put(
-			Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
-			{ body: commands },
-		);
-		console.log(`Successfully reloaded ${data.length} application (/) commands.`);
-	} catch (error) {
-		// And of course, make sure you catch and log any errors!
-		console.error(error);
-	}
-})();
 ```
 
-## Command Execution & Handling
-
-Implemented in `main` file, can be used in a separate file to implement this to encourage readability.
-
+- prim.js (after adding event handling code)
 ```
+require('dotenv').config(); // Load environment variables from a .env file
+
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, Collection, Events, IntentsBitField } = require('discord.js');
+const { Client, Collection, GatewayIntentBits } = require('discord.js');
+
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 client.commands = new Collection();
 const foldersPath = path.join(__dirname, 'commands');
@@ -108,10 +75,10 @@ const commandFolders = fs.readdirSync(foldersPath);
 for (const folder of commandFolders) {
 	const commandsPath = path.join(foldersPath, folder);
 	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+	console.log(`Command :${commandFiles}`)
 	for (const file of commandFiles) {
 		const filePath = path.join(commandsPath, file);
 		const command = require(filePath);
-		// Set a new item in the Collection with the key as the command name and the value as the exported module
 		if ('data' in command && 'execute' in command) {
 			client.commands.set(command.data.name, command);
 		} else {
@@ -119,66 +86,24 @@ for (const folder of commandFolders) {
 		}
 	}
 }
-client.on(Events.InteractionCreate, async interaction => {
-	if (!interaction.isChatInputCommand()) return;
 
-	const command = interaction.client.commands.get(interaction.commandName);
+const eventsPath = path.join(__dirname, 'events');
+const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
+console.log(`Events :${eventFiles}`)
 
-	if (!command) {
-		console.error(`No command matching ${interaction.commandName} was found.`);
-		return;
+for (const file of eventFiles) {
+	const filePath = path.join(eventsPath, file);
+	const event = require(filePath);
+	if (event.once) {
+		client.once(event.name, (...args) => event.execute(...args));
+	} else {
+		client.on(event.name, (...args) => event.execute(...args));
 	}
+}
 
-	try {
-		await command.execute(interaction);
-	} catch (error) {
-		console.error(error);
-		if (interaction.replied || interaction.deferred) {
-			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
-		} else {
-			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-		}
-	}
-});
+client.login(process.env.BOT_TOKEN);
 ```
-
-## Command Files
-
-Command files should be individually written with functions and operations.
-
-### ping.js
-```
-const { SlashCommandBuilder } = require('discord.js');
-
-module.exports = {
-	data: new SlashCommandBuilder()
-		.setName('ping')
-		.setDescription('Replies with Pong!'),
-	async execute(interaction) {
-		await interaction.reply('Pong!');
-	},
-};
-```
-
-### server.js
-```
-
-const { SlashCommandBuilder } = require('discord.js');
-
-module.exports = {
-	data: new SlashCommandBuilder()
-		.setName('server')
-		.setDescription('Provides information about the server.'),
-	async execute(interaction) {
-		// interaction.guild is the object representing the Guild in which the command was run
-		await interaction.reply(`This server is ${interaction.guild.name} and has ${interaction.guild.memberCount} members.`);
-	},
-};
-```
-> Make sure to save these command files inside `subfolders` rather than placing these inside the `folder`.
-
-## Directory Structure
-
+Let's say you followed till here, and your directory must look like this.
 ```
 Project/
 ├── commands/
@@ -186,6 +111,9 @@ Project/
 │   │   ├── ping.js
 │   ├── misc/
 │   │   ├── server.js
+├── events/
+│   ├── ready.js
+│   ├── interactionCreate.js
 ├── node_modules/
 ├── deploy-command.js
 ├── commandHandler.js
