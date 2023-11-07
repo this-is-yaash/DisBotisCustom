@@ -36,6 +36,21 @@ require('dotenv').config(); // Load environment variables from a .env file
 const fs = require('node:fs');
 const path = require('node:path');
 
+<<<<<<< HEAD
+=======
+*Refer [discord.js](https://discordjs.guide/creating-your-bot/slash-commands.html) library to start working on implementing commands*
+
+## Command Deploy
+
+When we run this code, it will register the commands into the bot
+
+```
+const { REST, Routes } = require('discord.js');
+const { clientId, guildId, token } = require('./config.json');
+const fs = require('node:fs');
+const path = require('node:path');
+
+>>>>>>> command
 const commands = [];
 // Grab all the command files from the commands directory you created earlier
 const foldersPath = path.join(__dirname, 'commands');
@@ -59,7 +74,11 @@ for (const folder of commandFolders) {
 	}
 }
 // Construct and prepare an instance of the REST module
+<<<<<<< HEAD
 const rest = new REST().setToken(process.env.BOT_TOKEN);
+=======
+const rest = new REST().setToken(token);
+>>>>>>> command
 
 // and deploy your commands!
 (async () => {
@@ -68,15 +87,23 @@ const rest = new REST().setToken(process.env.BOT_TOKEN);
 
 		// The put method is used to fully refresh all commands in the guild with the current set
 		const data = await rest.put(
+<<<<<<< HEAD
 			Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
 			{ body: commands },
 		);
+=======
+			Routes.applicationGuildCommands(clientId, guildId),
+			{ body: commands },
+		);
+
+>>>>>>> command
 		console.log(`Successfully reloaded ${data.length} application (/) commands.`);
 	} catch (error) {
 		// And of course, make sure you catch and log any errors!
 		console.error(error);
 	}
 })();
+<<<<<<< HEAD
 
 ```
 
@@ -89,6 +116,16 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Events, IntentsBitField } = require('discord.js');
 
+=======
+```
+> Run this file `node <filename>.js` to registering new command(s) files.
+
+## Command Handler
+
+This code is responsible for handling the command by dynamically executing the proper commands.
+
+```
+>>>>>>> command
 client.commands = new Collection();
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
@@ -107,7 +144,11 @@ for (const folder of commandFolders) {
 		}
 	}
 }
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> command
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
 
@@ -129,4 +170,43 @@ client.on(Events.InteractionCreate, async interaction => {
 		}
 	}
 });
+<<<<<<< HEAD
 ```
+=======
+```
+
+## Command Files
+
+Command files should be individually written with functions and operations.
+
+### ping.js
+```
+const { SlashCommandBuilder } = require('discord.js');
+
+module.exports = {
+	data: new SlashCommandBuilder()
+		.setName('ping')
+		.setDescription('Replies with Pong!'),
+	async execute(interaction) {
+		await interaction.reply('Pong!');
+	},
+};
+```
+
+### server.js
+```
+
+const { SlashCommandBuilder } = require('discord.js');
+
+module.exports = {
+	data: new SlashCommandBuilder()
+		.setName('server')
+		.setDescription('Provides information about the server.'),
+	async execute(interaction) {
+		// interaction.guild is the object representing the Guild in which the command was run
+		await interaction.reply(`This server is ${interaction.guild.name} and has ${interaction.guild.memberCount} members.`);
+	},
+};
+```
+> Make sure to save these command files inside `subfolders` rather than placing these inside the `folder`.
+>>>>>>> command

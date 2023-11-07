@@ -57,7 +57,7 @@ client.on(Events.InteractionCreate, async interaction => {
 });
 
 client.on('ready', () => {
-  console.log(`Logged in as ${client.user.tag}`);
+  console.log(`${client.user.tag} is running!`);
 });
 
 client.login(process.env.BOT_TOKEN); // Replace BOT_TOKEN with your bot's token
