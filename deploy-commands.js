@@ -38,10 +38,6 @@ const rest = new REST().setToken(process.env.BOT_TOKEN);
 			Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
 			{ body: commands },
 		);
-<<<<<<< HEAD
-=======
-
->>>>>>> command
 		console.log(`Successfully reloaded ${data.length} application (/) commands.`);
 	} catch (error) {
 		// And of course, make sure you catch and log any errors!
