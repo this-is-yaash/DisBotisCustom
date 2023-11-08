@@ -1,125 +1,79 @@
-## Event Handling
-Refer [discord.js](https://discordjs.guide/creating-your-bot/event-handling.html) library to start working event handling*
+# Discord Bot Commands Documentation
 
-Create a directory `Events` and move the bot ready code  & interaction create code to that directory in each files. Implement `module.exports` methods in that files.
+This document provides information on how to use the `kick`, `ban`, and `unban` commands in our Discord bot. These commands allow you to manage server members by kicking, banning, or unbanning them.
 
-- events/ready.js
-```
-const { Events } = require('discord.js');
+## Table of Contents
 
-module.exports = {
-	name: Events.ClientReady,
-	once: true,
-	execute(client) {
-		console.log(`Ready! Logged in as ${client.user.tag}`);
-	},
-};
-```
+- [Prerequisites](https://discordjs.guide/popular-topics/faq.html)
+- [Kick Command](https://discordjs.guide/popular-topics/faq.html)
+- [Ban Command](https://discordjs.guide/popular-topics/faq.html)
+- [Unban Command](https://discordjs.guide/popular-topics/faq.html)
 
-- events/interactionCreate.js
-```
-const { Events } = require('discord.js');
+## Prerequisites
 
-module.exports = {
-	name: Events.InteractionCreate,
-	async execute(interaction) {
-		if (!interaction.isChatInputCommand()) return;
+Before using these commands, please ensure the following:
 
-		const command = interaction.client.commands.get(interaction.commandName);
+1. You have the necessary permissions to perform these actions on the Discord server.
+2. You are using these commands in a server where the bot is present.
 
-		if (!command) {
-			console.error(`No command matching ${interaction.commandName} was found.`);
-			return;
-		}
+## Kick Command
 
-		try {
-			await command.execute(interaction);
-		} catch (error) {
-			console.error(`Error executing ${interaction.commandName}`);
-			console.error(error);
-		}
-	},
-};
-```
-- event handling code
-```
-const eventsPath = path.join(__dirname, 'events');
-const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
-console.log(`Events :${eventFiles}`)
+### Command Syntax
 
-for (const file of eventFiles) {
-	const filePath = path.join(eventsPath, file);
-	const event = require(filePath);
-	if (event.once) {
-		client.once(event.name, (...args) => event.execute(...args));
-	} else {
-		client.on(event.name, (...args) => event.execute(...args));
-	}
-}
-```
 
-- prim.js (after adding event handling code)
-```
-require('dotenv').config(); // Load environment variables from a .env file
+### Description
 
-const fs = require('node:fs');
-const path = require('node:path');
-const { Client, Collection, GatewayIntentBits } = require('discord.js');
+The `kick` command allows you to kick a user from the server.
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+### Usage
 
-client.commands = new Collection();
-const foldersPath = path.join(__dirname, 'commands');
-const commandFolders = fs.readdirSync(foldersPath);
+1. Type `/kick @user` in the server chat, where `@user` is the user you want to kick.
+2. The bot will attempt to kick the specified user.
 
-for (const folder of commandFolders) {
-	const commandsPath = path.join(foldersPath, folder);
-	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-	console.log(`Command :${commandFiles}`)
-	for (const file of commandFiles) {
-		const filePath = path.join(commandsPath, file);
-		const command = require(filePath);
-		if ('data' in command && 'execute' in command) {
-			client.commands.set(command.data.name, command);
-		} else {
-			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
-		}
-	}
-}
+### Example
 
-const eventsPath = path.join(__dirname, 'events');
-const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
-console.log(`Events :${eventFiles}`)
 
-for (const file of eventFiles) {
-	const filePath = path.join(eventsPath, file);
-	const event = require(filePath);
-	if (event.once) {
-		client.once(event.name, (...args) => event.execute(...args));
-	} else {
-		client.on(event.name, (...args) => event.execute(...args));
-	}
-}
+## Ban Command
 
-client.login(process.env.BOT_TOKEN);
-```
-Let's say you followed till here, and your directory must look like this.
-```
-Project/
-├── commands/
-│   ├── fun/
-│   │   ├── ping.js
-│   ├── misc/
-│   │   ├── server.js
-├── events/
-│   ├── ready.js
-│   ├── interactionCreate.js
-├── node_modules/
-├── deploy-command.js
-├── commandHandler.js
-├── LICENSE
-├── package.json
-├── prim.js
-├── package-lock.json
-├── README.md
-```
+### Command Syntax
+
+
+### Description
+
+The `ban` command allows you to ban a user from the server.
+
+### Usage
+
+1. Type `/ban @user` in the server chat, where `@user` is the user you want to ban.
+2. The bot will attempt to ban the specified user.
+
+### Example
+
+
+## Unban Command
+
+### Command Syntax
+
+
+### Description
+
+The `unban` command allows you to unban a user from the server.
+
+### Usage
+
+1. Type `/unban User_ID` in the server chat, where `User_ID` is the unique ID of the user you want to unban.
+2. The bot will attempt to unban the specified user.
+
+### Example
+
+
+Please replace `@user` with the actual user's mention, and `User_ID` with the user's unique Discord ID when using these commands.
+
+## Note
+
+- These commands should be used responsibly and with proper authority.
+- Be cautious when using these commands, as they have an immediate impact on server members.
+- Ensure that you have the necessary permissions to execute these commands in the server.
+- The commands may have restrictions or requirements depending on your Discord bot setup and server configuration.
+
+Thank you for using our Discord bot!
