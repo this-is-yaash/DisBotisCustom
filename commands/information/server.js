@@ -15,7 +15,7 @@ module.exports = {
     // .setDescription('Some description here')
     .setThumbnail(interaction.guild.iconURL())
     .addFields(
-        { name: 'Server Name', value: guild.name, inline: true },
+        { name: 'Server Name', value: `**${guild.name}**`, inline: true },
         { name: 'Server ID', value: guild.id.toString(), inline: true },
         { name: 'Owner', value: `<@${guild.ownerId}>`, inline: true },
         { name: 'Total Members', value: guild.memberCount.toString(), inline: true },
