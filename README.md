@@ -62,7 +62,8 @@ The `unban` command allows you to unban a user from the server.
 ### Usage
 
 1. Type `/unban User_ID` in the server chat, where `User_ID` is the unique ID of the user you want to unban.
-2. The bot will attempt to unban the specified user.
+2. This will also support the username which will be handy because getting USER ID is a tedious process.
+3. The bot will attempt to unban the specified user.
 
 ### Example
 
