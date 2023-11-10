@@ -5,11 +5,11 @@ module.exports = {
     .setName('kick')
     .setDescription('Kick a user from the server.')
     .addUserOption(option => 
-        option.setName('target')
+        option.setName('user')
         .setDescription('The user to kick')
         .setRequired(true)),
   async execute(interaction) {
-    const user = interaction.options.getUser('target');
+    const user = interaction.options.getUser('user');
 
     if (user) {
       const member = interaction.guild.members.cache.get(user.id);
