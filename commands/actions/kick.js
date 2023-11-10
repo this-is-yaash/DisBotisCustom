@@ -1,5 +1,5 @@
-const { SlashCommandBuilder } = require('discord.js');
-
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const access = require('./access'); // Adjust the path based on your project structure
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('kick')
@@ -9,7 +9,12 @@ module.exports = {
         .setDescription('The user to kick')
         .setRequired(true)),
   async execute(interaction) {
-    const user = interaction.options.getUser('user');
+    const requiredRole = 'Your Role Name'; // Replace with the name of the role you want to check
+
+    // Check permissions
+    if (!(await access.checkPermission(interaction, requiredRole))) {
+      return;
+    }    const user = interaction.options.getUser('user');
 
     if (user) {
       const member = interaction.guild.members.cache.get(user.id);
