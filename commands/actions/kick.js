@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const access = require('./access'); // Adjust the path based on your project structure
+const access = require('./accessEmbed'); // Adjust the path based on your project structure
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('kick')
@@ -9,7 +10,7 @@ module.exports = {
         .setDescription('The user to kick')
         .setRequired(true)),
   async execute(interaction) {
-    const requiredRole = 'Your Role Name'; // Replace with the name of the role you want to check
+const requiredRole = 'Admin'; // Replace with the name of the role you want to check
 
     // Check permissions
     if (!(await access.checkPermission(interaction, requiredRole))) {
@@ -27,8 +28,13 @@ module.exports = {
       if (member.kickable) {
         try {
           await member.kick();
-          await interaction.reply(`${user.tag} has been kicked from the server.`);
-        } catch (error) {
+          // Create an embed for the kick response
+          const kickEmbed = new EmbedBuilder()
+            .setTitle("Kicked")
+            .setDescription(`${user.tag} has been kicked out of ${interaction.guild.name}`)
+            .setColor('#ff0000'); // Adjust the color as needed
+          await interaction.reply({ embeds: [kickEmbed] });
+        }  catch (error) {
           console.error(`Error kicking user: ${error}`);
           await interaction.reply('There was an error while kicking the user.');
         }

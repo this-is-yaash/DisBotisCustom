@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const access = require('./access'); // Adjust the path based on your project structure
+const access = require('./accessEmbed'); // Adjust the path based on your project structure
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('unban')
@@ -14,7 +14,7 @@ module.exports = {
         .setRequired(false)),
     
   async execute(interaction) {
-    const requiredRole = 'Your Role Name'; // Replace with the name of the role you want to check
+    const requiredRole = 'Admin'; // Replace with the name of the role you want to check
 
     // Check permissions
     if (!(await access.checkPermission(interaction, requiredRole))) {

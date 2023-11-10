@@ -7,7 +7,7 @@ module.exports = {
         const embed = new EmbedBuilder()
           .setColor('#ff0000')
           .setTitle('Permission Denied')
-          .setDescription(`Sorry, you do not have the permission to use the \`${interaction.commandName}\` command.`)
+          .setDescription(`Sorry, you do not have the access to use the \`${interaction.commandName}\` command.`)
           .setTimestamp();
   
         await interaction.reply({ embeds: [embed], ephemeral: true });

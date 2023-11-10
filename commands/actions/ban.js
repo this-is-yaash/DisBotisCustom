@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const access = require('./access'); // Adjust the path based on your project structure
+const access = require('./accessEmbed'); // Adjust the path based on your project structure
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -10,7 +10,7 @@ module.exports = {
         .setDescription('The user to ban')
         .setRequired(true)),
   async execute(interaction) {
-    const requiredRole = 'Your Role Name'; // Replace with the name of the role you want to check
+    const requiredRole = 'Admin'; // Replace with the name of the role you want to check
 
     // Check permissions
     if (!(await access.checkPermission(interaction, requiredRole))) {
@@ -29,7 +29,12 @@ module.exports = {
       if (member.bannable) {
         try {
           await member.ban();
-          await interaction.reply(`${user.tag} has been banned from the server.`);
+          // Create an embed for the kick response
+          const banEmbed = new EmbedBuilder()
+            .setTitle("Banned")
+            .setDescription(`${user.tag} has been banned ${interaction.guild.name}`)
+            .setColor('#ff0000'); // Adjust the color as needed
+          await interaction.reply({ embeds: [banEmbed] });
         } catch (error) {
           console.error(`Error banning user: ${error}`);
           await interaction.reply('There was an error while banning the user.');
