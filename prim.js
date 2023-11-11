@@ -2,17 +2,33 @@ require('dotenv').config(); // Load environment variables from a .env file
 
 const fs = require('node:fs');
 const path = require('node:path');
+
+const welcomeHandler = require('./eventHandlers/guildMemberAdd'); // Import the welcome handler
+const goodbyeHandler = require('./eventHandlers/guildMemberRemove'); //Import the goodbye handler
+
+
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMembers,] });
 
-// Load all event handlers dynamically
-const eventHandlerDir = path.join(__dirname, 'eventHandlers');
-fs.readdirSync(eventHandlerDir).forEach((file) => {
-  const eventHandler = require(path.join(eventHandlerDir, file));
-  const eventName = file.split('.')[0]; // Remove the file extension
-  client.on(eventName, eventHandler.execute);
-});
+// Greet Messages
+client.on('guildMemberAdd', async (member) => {
+	const welcomeChannelId = process.env.WELCOME; 
+	const welcomeChannel = member.guild.channels.cache.get(welcomeChannelId);
+  
+	if (!welcomeChannel) return;
+  
+	const sentMessage = await welcomeHandler.handleWelcome(member, welcomeChannel);
+  });
+  // Depart Messages
+  client.on('guildMemberRemove', async (member) => {
+	const goodbyeChannelId = process.env.GOODBYE;
+	const goodbyeChannel = member.guild.channels.cache.get(goodbyeChannelId);
+  
+	if (!goodbyeChannel) return;
+  
+	const sentMessage = await goodbyeHandler.handleGoodbye(member, goodbyeChannel);
+  });
 
 //command handling
 client.commands = new Collection();
