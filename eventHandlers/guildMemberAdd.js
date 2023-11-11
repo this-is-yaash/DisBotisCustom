@@ -19,7 +19,9 @@ const greetings = [
   'New member detected! Welcome to the chaos!'
 ];
 
-async function handleWelcome(member) {
+
+module.exports = {
+  execute: (member) => {
     // Select a random greeting from the array
     const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
 
@@ -42,8 +44,5 @@ async function handleWelcome(member) {
       channel.send({ embeds: [welcomeEmbed] });
       console.log('guildMemberAdd event triggered. Member');
     }
-  };
-
-  module.exports = {
-    handleWelcome
+  },
 };

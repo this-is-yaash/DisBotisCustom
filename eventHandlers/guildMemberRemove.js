@@ -19,8 +19,9 @@ const farewells = [
   'May the wind be at your back as you embark on new endeavors. Goodbye!',
 ];
 
-async function handleGoodbye(member) {
 
+module.exports = {
+  execute: (member) => {
     const randomFarewell = farewells[Math.floor(Math.random() * farewells.length)];
 
     const goodbyeEmbed = new EmbedBuilder()
@@ -42,8 +43,5 @@ const channel = member.guild.channels.cache.get(process.env.GOODBYE);
       channel.send({ embeds: [goodbyeEmbed] });
       console.log('guildMemberRemove event triggered. Member:');
     }
-};
-
-module.exports = {
-  handleGoodbye
+  },
 };
