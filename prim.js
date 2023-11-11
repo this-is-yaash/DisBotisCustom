@@ -4,7 +4,15 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMembers,] });
+
+// Load all event handlers dynamically
+const eventHandlerDir = path.join(__dirname, 'eventHandlers');
+fs.readdirSync(eventHandlerDir).forEach((file) => {
+  const eventHandler = require(path.join(eventHandlerDir, file));
+  const eventName = file.split('.')[0]; // Remove the file extension
+  client.on(eventName, eventHandler.execute);
+});
 
 //command handling
 client.commands = new Collection();
