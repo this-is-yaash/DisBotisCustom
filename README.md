@@ -1,80 +1,148 @@
-# Discord Bot Commands Documentation
+# Guild Member Events Documentation
 
-This document provides information on how to use the `kick`, `ban`, and `unban` commands in our Discord bot. These commands allow you to manage server members by kicking, banning, or unbanning them.
+## Introduction
+
+This documentation provides a guide on implementing `guildMemberAdd` and `guildMemberRemove` events in a Discord bot using Discord.js. These events are triggered when a member joins or leaves a server, allowing you to perform custom actions such as sending welcome messages or farewell messages.
 
 ## Table of Contents
 
-- [Prerequisites](https://discordjs.guide/popular-topics/faq.html)
-- [Kick Command](https://discordjs.guide/popular-topics/faq.html)
-- [Ban Command](https://discordjs.guide/popular-topics/faq.html)
-- [Unban Command](https://discordjs.guide/popular-topics/faq.html)
+1. [Implementation](#implementation)
+   - [Guild Member Add](#guild-member-add)
+   - [Guild Member Remove](#guild-member-remove)
+2. [Customization](#customization)
+3. [Example Code](#example-code)
 
-## Prerequisites
+## Implementation
 
-Before using these commands, please ensure the following:
+```javascript
+// Load all event handlers dynamically
+const eventHandlerDir = path.join(__dirname, 'eventHandlers');
+fs.readdirSync(eventHandlerDir).forEach((file) => {
+  const eventHandler = require(path.join(eventHandlerDir, file));
+  const eventName = file.split('.')[0]; // Remove the file extension
+  client.on(eventName, eventHandler.execute);
+});
+```
+with this code, it will trigger the `guildMemberAdd` & `guildMemberRemove` events
 
-1. You have the necessary permissions to perform these actions on the Discord server.
-2. You are using these commands in a server where the bot is present.
+>It has been implemented like when this event occurs, this will implement the mentioned files or program. Such as `guildMemberAdd.js` and `guildMemberRemove.js`.
 
-## Kick Command
+### Guild Member Add
 
-### Command Syntax
+The `guildMemberAdd` event is triggered when a member joins the server
+
+```javascript
+// Example Implementation
+client.on('guildMemberAdd', (member) => {
+  // Your custom code here
+});
+```
+
+### Guild Member Remove
+
+The `guildMemberRemove` event is triggered when a member joins the server
+
+```javascript
+// Example Implementation
+client.on('guildMemberRemove', (member) => {
+  // Your custom code here
+});
+```
+
+## Example code
+
+- prime.js 
+
+```javascript
+const fs = require('node:fs');
+const path = require('node:path');
+
+// Load all event handlers dynamically
+const eventHandlerDir = path.join(__dirname, 'eventHandlers');
+fs.readdirSync(eventHandlerDir).forEach((file) => {
+  const eventHandler = require(path.join(eventHandlerDir, file));
+  const eventName = file.split('.')[0]; // Remove the file extension
+  client.on(eventName, eventHandler.execute);
+});
+```
+
+- guildMemberAdd.js
+
+```javascript
+const { EmbedBuilder } = require('discord.js');
+require('dotenv').config();
+
+const greetings = [
+  'Welcome to the server!',
+  'Hello and welcome!',
+  'Glad to have you here!',
+];
+module.exports = {
+  execute: (member) => {
+    // Select a random greeting from the array
+    const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
+
+    // Create the welcome embed with the random greeting
+    const welcomeEmbed = new EmbedBuilder()
+      .setColor('#00ff00')
+      .setTitle('Welcome to the Server!')
+      .setDescription(`${randomGreeting} **${member.displayName}**`)
+      .setThumbnail(member.user.displayAvatarURL())
+      .addFields(
+        { name: 'User Name', value: member.user.tag },
+        { name: 'Name', value: member.displayName },
+        { name: 'Join Date', value: member.joinedAt.toDateString() }
+      )
+      .setImage('img link'); // Reference the attachment by its filename
+
+    // Send the embed to a specific channel in your server
+    const channel = member.guild.channels.cache.get(process.env.WELCOME);
+    if (channel) {
+      channel.send({ embeds: [welcomeEmbed] });
+      console.log('guildMemberAdd event triggered. Member');
+    }
+  },
+};
+
+```
+
+- guildMemberRemove.js
+
+```javascript
+const { EmbedBuilder } = require('discord.js');
+require('dotenv').config(); // Load environment variables from a .env file
+
+const farewells = [
+  'Farewell, friend. We\'ll miss you!',
+  'Goodbye and take care!',
+  'Sad to see you go. Farewell!',
+];
 
 
-### Description
+module.exports = {
+  execute: (member) => {
+    const randomFarewell = farewells[Math.floor(Math.random() * farewells.length)];
 
-The `kick` command allows you to kick a user from the server.
+    const goodbyeEmbed = new EmbedBuilder()
+      .setColor('#ff0000')
+      .setTitle('Goodbye!')
+      .setDescription(`${randomFarewell} **${member.displayName}**`)
+      .setThumbnail(member.user.displayAvatarURL())
+      .addFields(
+        { name: 'User Name', value: member.user.tag },
+        { name: 'Name', value: member.displayName },
+        { name: 'Join Date', value: member.joinedAt.toDateString() },
+        { name: 'Left Date', value: new Date().toDateString() } // Add the left date field
+      )
+      .setImage('img link')
 
-### Usage
+    // Send the embed to a specific channel in your server
+const channel = member.guild.channels.cache.get(process.env.GOODBYE);
+    if (channel) {
+      channel.send({ embeds: [goodbyeEmbed] });
+      console.log('guildMemberRemove event triggered. Member:');
+    }
+  },
+};
 
-1. Type `/kick @user` in the server chat, where `@user` is the user you want to kick.
-2. The bot will attempt to kick the specified user.
-
-### Example
-
-
-## Ban Command
-
-### Command Syntax
-
-
-### Description
-
-The `ban` command allows you to ban a user from the server.
-
-### Usage
-
-1. Type `/ban @user` in the server chat, where `@user` is the user you want to ban.
-2. The bot will attempt to ban the specified user.
-
-### Example
-
-
-## Unban Command
-
-### Command Syntax
-
-
-### Description
-
-The `unban` command allows you to unban a user from the server.
-
-### Usage
-
-1. Type `/unban User_ID` in the server chat, where `User_ID` is the unique ID of the user you want to unban.
-2. This will also support the username which will be handy because getting USER ID is a tedious process.
-3. The bot will attempt to unban the specified user.
-
-### Example
-
-
-Please replace `@user` with the actual user's mention, and `User_ID` with the user's unique Discord ID when using these commands.
-
-## Note
-
-- These commands should be used responsibly and with proper authority.
-- Be cautious when using these commands, as they have an immediate impact on server members.
-- Ensure that you have the necessary permissions to execute these commands in the server.
-- The commands may have restrictions or requirements depending on your Discord bot setup and server configuration.
-
-Thank you for using our Discord bot!
+```
