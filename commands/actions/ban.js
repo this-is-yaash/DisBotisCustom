@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const access = require('./accessEmbed'); // Adjust the path based on your project structure
+const access = require('./actionsMisc/accessEmbed'); // Adjust the path based on your project structure
 
 module.exports = {
   data: new SlashCommandBuilder()
