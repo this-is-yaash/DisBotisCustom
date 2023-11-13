@@ -9,7 +9,6 @@ module.exports = {
           .setTitle('Permission Denied')
           .setDescription(`Sorry, you do not have the access to use the \`${interaction.commandName}\` command.`)
           .setTimestamp();
-  
         await interaction.reply({ embeds: [embed], ephemeral: true });
         return false;
     }
