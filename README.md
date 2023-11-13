@@ -1,148 +1,67 @@
-# Guild Member Events Documentation
+# User Command Limitation Documentation
 
-## Introduction
+## Overview
 
-This documentation provides a guide on implementing `guildMemberAdd` and `guildMemberRemove` events in a Discord bot using Discord.js. These events are triggered when a member joins or leaves a server, allowing you to perform custom actions such as sending welcome messages or farewell messages.
-
-## Table of Contents
-
-1. [Implementation](#implementation)
-   - [Guild Member Add](#guild-member-add)
-   - [Guild Member Remove](#guild-member-remove)
-2. [Customization](#customization)
-3. [Example Code](#example-code)
+This documentation outlines the implementation of user command limitations for certain commands like kick, ban, and unban in a Discord bot. These limitations are set to control access to specific actions based on the user's role.
 
 ## Implementation
 
-```javascript
-// Load all event handlers dynamically
-const eventHandlerDir = path.join(__dirname, 'eventHandlers');
-fs.readdirSync(eventHandlerDir).forEach((file) => {
-  const eventHandler = require(path.join(eventHandlerDir, file));
-  const eventName = file.split('.')[0]; // Remove the file extension
-  client.on(eventName, eventHandler.execute);
-});
-```
-with this code, it will trigger the `guildMemberAdd` & `guildMemberRemove` events
+### Access Control
+1. Create an access.js Module:
 
->It has been implemented like when this event occurs, this will implement the mentioned files or program. Such as `guildMemberAdd.js` and `guildMemberRemove.js`.
-
-### Guild Member Add
-
-The `guildMemberAdd` event is triggered when a member joins the server
+Create a module named access.js that checks the user's role before allowing certain commands.
 
 ```javascript
-// Example Implementation
-client.on('guildMemberAdd', (member) => {
-  // Your custom code here
-});
-```
-
-### Guild Member Remove
-
-The `guildMemberRemove` event is triggered when a member joins the server
-
-```javascript
-// Example Implementation
-client.on('guildMemberRemove', (member) => {
-  // Your custom code here
-});
-```
-
-## Example code
-
-- prime.js 
-
-```javascript
-const fs = require('node:fs');
-const path = require('node:path');
-
-// Load all event handlers dynamically
-const eventHandlerDir = path.join(__dirname, 'eventHandlers');
-fs.readdirSync(eventHandlerDir).forEach((file) => {
-  const eventHandler = require(path.join(eventHandlerDir, file));
-  const eventName = file.split('.')[0]; // Remove the file extension
-  client.on(eventName, eventHandler.execute);
-});
-```
-
-- guildMemberAdd.js
-
-```javascript
-const { EmbedBuilder } = require('discord.js');
-require('dotenv').config();
-
-const greetings = [
-  'Welcome to the server!',
-  'Hello and welcome!',
-  'Glad to have you here!',
-];
+// access.js
 module.exports = {
-  execute: (member) => {
-    // Select a random greeting from the array
-    const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
-
-    // Create the welcome embed with the random greeting
-    const welcomeEmbed = new EmbedBuilder()
-      .setColor('#00ff00')
-      .setTitle('Welcome to the Server!')
-      .setDescription(`${randomGreeting} **${member.displayName}**`)
-      .setThumbnail(member.user.displayAvatarURL())
-      .addFields(
-        { name: 'User Name', value: member.user.tag },
-        { name: 'Name', value: member.displayName },
-        { name: 'Join Date', value: member.joinedAt.toDateString() }
-      )
-      .setImage('img link'); // Reference the attachment by its filename
-
-    // Send the embed to a specific channel in your server
-    const channel = member.guild.channels.cache.get(process.env.WELCOME);
-    if (channel) {
-      channel.send({ embeds: [welcomeEmbed] });
-      console.log('guildMemberAdd event triggered. Member');
+  checkPermission: async (interaction, requiredRole) => {
+    // Implement logic to check the user's role
+    const member = interaction.guild.members.cache.get(interaction.user.id);
+    if (member.roles.cache.some(role => role.name === requiredRole)) {
+      return true;
+    } else {
+      await interaction.reply('You do not have permission to execute this command.');
+      return false;
     }
   },
 };
-
 ```
 
-- guildMemberRemove.js
+2. Use access.js in Command Files:
+
+In your command files (e.g., kick.js, ban.js, unban.js), use the checkPermission function from access.js to control access.
 
 ```javascript
-const { EmbedBuilder } = require('discord.js');
-require('dotenv').config(); // Load environment variables from a .env file
-
-const farewells = [
-  'Farewell, friend. We\'ll miss you!',
-  'Goodbye and take care!',
-  'Sad to see you go. Farewell!',
-];
-
+// kick.js
+const access = require('./access.js');
 
 module.exports = {
-  execute: (member) => {
-    const randomFarewell = farewells[Math.floor(Math.random() * farewells.length)];
+  data: // ... (SlashCommandBuilder),
+  async execute(interaction) {
+    const requiredRole = 'Admin'; // Replace with the name of the role you want to check
 
-    const goodbyeEmbed = new EmbedBuilder()
-      .setColor('#ff0000')
-      .setTitle('Goodbye!')
-      .setDescription(`${randomFarewell} **${member.displayName}**`)
-      .setThumbnail(member.user.displayAvatarURL())
-      .addFields(
-        { name: 'User Name', value: member.user.tag },
-        { name: 'Name', value: member.displayName },
-        { name: 'Join Date', value: member.joinedAt.toDateString() },
-        { name: 'Left Date', value: new Date().toDateString() } // Add the left date field
-      )
-      .setImage('img link')
-
-    // Send the embed to a specific channel in your server
-const channel = member.guild.channels.cache.get(process.env.GOODBYE);
-    if (channel) {
-      channel.send({ embeds: [goodbyeEmbed] });
-      console.log('guildMemberRemove event triggered. Member:');
+    // Check permissions
+    if (!(await access.checkPermission(interaction, requiredRole))) {
+      return;
     }
+
+    // Rest of the kick command logic
+    // ...
   },
 };
-
 ```
+
+## Command Limitation
+
+- Apply to Other Commands
+
+Repeat the process for other commands like ban and unban. Adjust the `requiredRole` accordingly.
+
+## Usage
+1. Ensure the access.js module is properly implemented.
+2. Include access.js in each command file where you want to limit access.
+3. Set the appropriate requiredRole for each command.
+
+Now, only users with the specified role will be able to execute commands like `kick`, `ban`, and `unban`.
+
+Feel free to customize the `access.js` module and command files based on your specific requirements and roles.
