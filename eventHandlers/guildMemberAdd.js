@@ -51,6 +51,18 @@ module.exports = {
       try {
         await member.roles.add(role);
         console.log(`Assigned 'Member' role to ${member.user.tag}`);
+        // Sending a DM to the member after role assignment
+        const dmEmbed = new EmbedBuilder()
+          .setColor('#3498db')
+          .setTitle('Role Assigned')
+          .setDescription('You have been assigned the `Member` role!')
+          .addFields(
+            {name: 'Server', value:member.guild.name },
+            {name: 'Role', value: role.name}
+          )        
+        // Sending the DM to the member
+        await member.send({ embeds: [dmEmbed] });
+        console.log(`Sent DM to ${member.user.tag}`);
       } catch (error) {
         console.error(`Error assigning role to ${member.user.tag}:`, error);
       }
