@@ -21,7 +21,7 @@ const greetings = [
 
 
 module.exports = {
-  execute: (member) => {
+  execute: async (member) => {
     // Select a random greeting from the array
     const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
 
@@ -43,6 +43,19 @@ module.exports = {
     if (channel) {
       channel.send({ embeds: [welcomeEmbed] });
       console.log('guildMemberAdd event triggered. Member');
+    }
+    
+    // Role Assignment Logic
+    const role = member.guild.roles.cache.find(role => role.name === 'Member');
+    if (role) {
+      try {
+        await member.roles.add(role);
+        console.log(`Assigned 'Member' role to ${member.user.tag}`);
+      } catch (error) {
+        console.error(`Error assigning role to ${member.user.tag}:`, error);
+      }
+    } else {
+      console.error("Could not find 'Member' role in the server.");
     }
   },
 };
