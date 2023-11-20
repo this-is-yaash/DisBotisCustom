@@ -1,4 +1,4 @@
-const { EmbedBuilder, SlashCommandBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -6,64 +6,69 @@ module.exports = {
     .setDescription('Request for role promotion.'),
 
   async execute(interaction) {
-    // Get the guild from the interaction
-    const guild = interaction.guild;
+    try {
+      const guild = interaction.guild;
 
-    // Fetch all roles available in the guild
-    const roles = guild.roles.cache
-      .filter((role) => !role.managed && role.name !== '@everyone')
-      .map((role) => role.name);
+      const roles = guild.roles.cache
+        .filter((role) => !role.managed && role.name !== '@everyone')
+        .map((role) => role.name);
 
-    // Create options for the role selection dropdown menu
-    const roleOptions = roles.map((role, index) => ({
-      label: role,
-      value: `role_${index}`,
-    }));
+      const roleOptions = roles.map((role, index) => ({
+        label: role,
+        value: `role_${index}`,
+      }));
 
-    // Create a role selection menu with a dropdown
-    const roleMenu = new ActionRowBuilder().addComponents(
-      new StringSelectMenuBuilder()
+      const selectOptions = roleOptions.map((option) => 
+        new StringSelectMenuOptionBuilder()
+          .setLabel(option.label)
+          .setValue(option.value)
+      );
+
+      const selectMenu = new StringSelectMenuBuilder()
         .setCustomId('roleMenu')
         .setPlaceholder('Select a role')
-        .addOptions(roleOptions)
-    );
+        .addOptions(selectOptions);
 
-    // Send the role selection menu
-    await interaction.reply({ content: 'Please select a role:', components: [roleMenu] })
-      .catch(console.error);
+      const row = new ActionRowBuilder().addComponents(selectMenu);
 
-    // Handle the selection
-    const filter = (interaction) => interaction.customId === 'roleMenu';
-    const collector = interaction.channel.createMessageComponentCollector({ filter, time: 15000 });
+      // Defer the initial response
+      await interaction.deferReply({ ephemeral: true });
 
-    collector.on('collect', async (interaction) => {
-      // Get the selected role
-      const selectedRole = interaction.values[0].split('_')[1];
-      const roleName = roles[selectedRole];
+      // Send the role selection menu
+      await interaction.followUp({ content: 'Please select a role:', components: [row] })
+        .catch(console.error);
 
-      // Get the Admin role
-      const adminRole = guild.roles.cache.find((role) => role.name === 'Admin');
+      const filter = (interaction) => interaction.customId === 'roleMenu';
+      const collector = interaction.channel.createMessageComponentCollector({ filter, time: 15000 });
 
-      // Send a DM to the Admin role mentioning the selected role
-      if (adminRole) {
-        const adminMembers = adminRole.members;
-        adminMembers.forEach(async (admin) => {
-          try {
-            await admin.send(`User ${interaction.user.tag} requested role: ${roleName}`);
-          } catch (error) {
-            console.error(`Failed to send DM to ${admin.user.tag}: ${error}`);
+      collector.on('collect', async (interaction) => {
+        try {
+          const selectedRole = interaction.values[0].split('_')[1];
+          const roleName = roles[parseInt(selectedRole)];
+
+          const adminRole = guild.roles.cache.find((role) => role.name === 'Admin');
+
+          if (adminRole) {
+            const adminMembers = adminRole.members;
+            for (const admin of adminMembers) {
+              await admin.send(`User ${interaction.user.tag} requested role: ${roleName}`);
+            }
+
+            const requestSentEmbed = new EmbedBuilder()
+              .setColor('#0099ff')
+              .setTitle('Role Request Sent')
+              .setDescription(`Your request for the role "${roleName}" has been sent to the admins.`);
+
+            await interaction.editReply({ content: '', embeds: [requestSentEmbed] }).catch(console.error);
           }
-        });
-
-        // Edit the response to an embed with a message indicating the request was sent
-        const requestSentEmbed = new EmbedBuilder()
-          .setColor('#0099ff')
-          .setTitle('Role Request Sent')
-          .setDescription(`Your request for the role "${roleName}" has been sent to the admins.`);
-
-        interaction.editReply({ content: '', embeds: [requestSentEmbed] })
-          .catch(console.error);
-      }
-    });
+        } catch (error) {
+          console.error('Failed to process the role request:', error);
+          const errorMessage = 'Failed to send the request. Please try again later.';
+          interaction.followUp(errorMessage).catch(console.error);
+        }
+      });
+    } catch (error) {
+      console.error('Error in processing the role promotion:', error);
+    }
   },
 };
