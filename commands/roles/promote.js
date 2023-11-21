@@ -27,7 +27,7 @@ async execute(interaction) {
     await interaction.followUp({ content: 'Please select a role:', components: [roleMenu] });
 
     // Handle role selection
-    handleRoleSelection(interaction, roles);
+    handleRoleSelection(interaction, roles, guild);
     
   } catch (error) {
     console.error('Error in processing the role promotion:', error);

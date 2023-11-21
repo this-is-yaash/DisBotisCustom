@@ -1,4 +1,5 @@
 const {EmbedBuilder}=require("discord.js")
+const { sendRequestToAdmins } = require('./requestAdminEmbed');
 
 async function handleRoleSelection(interaction, roles, guild) {
 
@@ -9,19 +10,11 @@ async function handleRoleSelection(interaction, roles, guild) {
       try {
         const selectedRole = interaction.values[0].split('_')[1];
         const roleName = roles[parseInt(selectedRole)];
-        const adminRole = guild.roles.cache.find((role) => role.name === 'Admin');
+        const adminRole = guild.roles.cache.find((role) => role.name === 'Member');
 
-        if (adminRole) {
-          const adminMembers = adminRole.members;
-          for (const admin of adminMembers) {
-            await admin.send(`User ${interaction.user.tag} requested role: ${roleName}`);
-          }
+        const requestSentEmbed = await sendRequestToAdmins(interaction ,adminRole, interaction.user.tag, roleName);
 
-          const requestSentEmbed = new EmbedBuilder()
-            .setColor('#0099ff')
-            .setTitle('Role Request Sent')
-            .setDescription(`Your request for the role **${roleName}** has been sent to the admins.`);
-
+        if (requestSentEmbed) {
           await interaction.update({ content: '', embeds: [requestSentEmbed], components: [] }).catch(console.error);
         }
 
