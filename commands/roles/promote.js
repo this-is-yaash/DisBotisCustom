@@ -1,4 +1,4 @@
-const { EmbedBuilder, SlashCommandBuilder, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -18,7 +18,7 @@ module.exports = {
         value: `role_${index}`,
       }));
 
-      const selectOptions = roleOptions.map((option) => 
+      const selectOptions = roleOptions.map((option) =>
         new StringSelectMenuOptionBuilder()
           .setLabel(option.label)
           .setValue(option.value)
@@ -59,7 +59,7 @@ module.exports = {
               .setTitle('Role Request Sent')
               .setDescription(`Your request for the role "${roleName}" has been sent to the admins.`);
 
-            await interaction.editReply({ content: '', embeds: [requestSentEmbed] }).catch(console.error);
+            await interaction.update({ content: '', embeds: [requestSentEmbed], components: [] }).catch(console.error);
           }
         } catch (error) {
           console.error('Failed to process the role request:', error);
