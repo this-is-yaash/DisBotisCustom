@@ -1,26 +1,26 @@
 const { EmbedBuilder } = require('discord.js');
 
-async function sendRequestToAdmins(adminRole, userTag, roleName) {
-  try {
-    if (adminRole) {
-      const adminMembers = adminRole.members;
-      for (const admin of adminMembers) {
-        await admin.send(`User ${userTag} requested role: ${roleName}`);
-      }
-
-      const requestSentEmbed = new EmbedBuilder()
-        .setColor('#0099ff')
-        .setTitle('Role Request Sent')
-        .setDescription(`Your request for the role **${roleName}** has been sent to the admins.`);
-
-      return requestSentEmbed;
+async function sendRequestToAdmins(interaction) {
+    const guild = interaction.guild;
+    const role = guild.roles.cache.find((role) => role.name === 'Admin'); // Change 'Member' to your role name
+  
+    if (!role) {
+      console.error('Role not found.');
+      return;
     }
-  } catch (error) {
-    console.error('Failed to send role request to admins:', error);
-    return null;
+  
+    const membersWithRole = role.members;
+  
+    membersWithRole.forEach(async (member) => {
+      try {
+        await member.send('Your message here');
+      } catch (error) {
+        console.error(`Failed to send message to ${member.user.tag}:`, error);
+      }
+    });
   }
-}
-
-module.exports = {
-  sendRequestToAdmins,
-};
+  
+  module.exports = {
+    sendRequestToAdmins,
+  };
+  
