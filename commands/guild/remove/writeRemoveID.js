@@ -14,8 +14,8 @@ function updateConfigFile(channelID) {
             // Parse the JSON data into an object
             const config = JSON.parse(data);
 
-            // Update the specific line in the JSON object
-            config.welcome_id = channelID; // Update the 'welcome_id' property
+            // Update only the 'goodbye_id' property in the JSON object
+            config.goodbye_id = channelID; // Update the 'goodbye_id' property
 
             // Write the updated JSON object back to the file
             fs.writeFile(fileName, JSON.stringify(config, null, 2), 'utf8', (err) => {
@@ -23,7 +23,7 @@ function updateConfigFile(channelID) {
                     console.error('Error writing file:', err);
                     return;
                 }
-                console.log('Channel ID updated in config.json successfully.');
+                console.log('goodbye_id updated in config.json successfully.');
             });
         } catch (error) {
             console.error('Error parsing JSON:', error);

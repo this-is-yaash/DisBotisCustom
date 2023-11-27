@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/this-is-yaash/DisBotisCustom#readme",
   "dependencies": {
+    "config.json": "^0.0.4",
     "discord.js": "^14.13.0",
     "dotenv": "^16.3.1",
     "nodemon": "^3.0.1"

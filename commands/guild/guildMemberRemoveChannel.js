@@ -1,5 +1,7 @@
 const { SlashCommandBuilder, ChannelType, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, EmbedBuilder } = require('discord.js');
 
+const { updateConfigFile } = require('../guild/remove/writeRemoveID');
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('goodbye')
@@ -55,6 +57,11 @@ module.exports = {
                     // Update the interaction with the embed
                     await interaction.editReply({ content: '', embeds: [embed], components: [] });
                     collector.stop();
+
+                    const channelID = selectedChannel.id;
+                    // Call the function from writeAddID.js to write the channel ID to a file
+                    updateConfigFile(channelID);
+
                 }
             });
 

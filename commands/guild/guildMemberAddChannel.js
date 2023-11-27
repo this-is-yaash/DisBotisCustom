@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, ChannelType, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, EmbedBuilder } = require('discord.js');
 
-const { writeFile } = require('./add/writeAddID')
+const { updateConfigFile } = require('../guild/add/writeAddID');
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('welcome')
@@ -59,7 +60,7 @@ module.exports = {
 
                     const channelID = selectedChannel.id;
                     // Call the function from writeAddID.js to write the channel ID to a file
-                    writeFile(channelID);
+                    updateConfigFile(channelID);
                 }
             });
 

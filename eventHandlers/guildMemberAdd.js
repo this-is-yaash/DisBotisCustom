@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
+const config = require('../config.json');
 require('dotenv').config();
 
 const greetings = [
@@ -43,7 +44,7 @@ module.exports = {
       .setImage('https://img.freepik.com/free-vector/lovely-welcome-composition-with-origami-style_23-2147920269.jpg?w=826&t=st=1694888632~exp=1694889232~hmac=3d1090555f6a0c31f9ddbf33c4a2cd155c84e8fbf783f4286c9b523b5092b631'); // Reference the attachment by its filename
 
     // Send the embed to a specific channel in your server
-    const channel = member.guild.channels.cache.find(channel => channel.name === 'welcome');
+    const channel = member.guild.channels.cache.get(config.welcome_id);
     
     if (channel) {
       const sentMessage = await channel.send({ embeds: [welcomeEmbed] });

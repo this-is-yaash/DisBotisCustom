@@ -1,4 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
+const config = require('../config.json');
+
 require('dotenv').config(); // Load environment variables from a .env file
 
 const farewells = [
@@ -43,7 +45,7 @@ module.exports = {
       .setImage('https://img.freepik.com/free-vector/goodbye-good-luck-lettering-background_23-2147979463.jpg?w=826&t=st=1694888315~exp=1694888915~hmac=588717deb26330a44808516f9daecf30eb10d6a422173a1327526bead8a835fa')
 
     // Send the embed to a specific channel in your server
-  const channel = member.guild.channels.cache.find(channel => channel.name === 'goodbye');
+  const channel = member.guild.channels.cache.get(config.goodbye_id);
   if (channel) {
     const sentMessage = await channel.send({ embeds: [goodbyeEmbed] });
     
