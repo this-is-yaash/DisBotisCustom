@@ -2,28 +2,32 @@ const { EmbedBuilder } = require('discord.js');
 require('dotenv').config();
 
 const greetings = [
-  'Welcome to the server!',
-  'Hello and welcome!',
-  'Glad to have you here!',
-  'Welcome aboard!',
-  'Hey there, welcome!',
-  'Greetings, traveler!',
-  'It\'s party time! Welcome!',
-  'Buckle up, new friend. The fun is just beginning!',
-  'Hooray! A new member has arrived!',
-  'Get ready for an adventure, new recruit!',
-  'Time to celebrate! You\'ve joined the party!',
-  'A warm welcome to our fantastic new member!',
-  'Welcome to the family! Grab a seat and enjoy!',
-  'We were waiting for someone as awesome as you. Welcome!',
-  'New member detected! Welcome to the chaos!'
+  '🌟 Welcome to the server!\n',
+  '👋 Hello and welcome!\n',
+  '😊 Glad to have you here!\n',
+  '🚀 Welcome aboard!\n',
+  '👋 Hey there, welcome!\n',
+  '🌍 Greetings, traveler!\n',
+  '🎉 It\'s party time! Welcome!\n',
+  '🎈 Buckle up, new friend.\n The fun is just beginning!\n',
+  '🎉 Hooray! A new member has arrived!\n',
+  '🌟 Get ready for an adventure, new recruit!\n',
+  '🎉 Time to celebrate! You\'ve joined the party!\n',
+  '🏠 A warm welcome to our fantastic new member!\n',
+  '👪 Welcome to the family!\n Grab a seat and enjoy!\n',
+  '🌟 We were waiting for someone as awesome as you.\n Welcome!\n',
+  '🌀 New member detected!\n Welcome to the chaos!\n'
 ];
 
+const emojis = ['🌟', '👋', '😊', '🚀', '👋', '🌍', '🎉', '🎈', '🎉', '🌟', '🎉', '🏠', '👪', '🌟', '🌀'];
 
 module.exports = {
   execute: async (member) => {
     // Select a random greeting from the array
     const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
+
+    // Select a random emoji from the array
+    const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
 
     // Create the welcome embed with the random greeting
     const welcomeEmbed = new EmbedBuilder()
@@ -39,9 +43,13 @@ module.exports = {
       .setImage('https://img.freepik.com/free-vector/lovely-welcome-composition-with-origami-style_23-2147920269.jpg?w=826&t=st=1694888632~exp=1694889232~hmac=3d1090555f6a0c31f9ddbf33c4a2cd155c84e8fbf783f4286c9b523b5092b631'); // Reference the attachment by its filename
 
     // Send the embed to a specific channel in your server
-    const channel = member.guild.channels.cache.get(process.env.WELCOME);
+    const channel = member.guild.channels.cache.find(channel => channel.name === 'welcome');
+    
     if (channel) {
-      channel.send({ embeds: [welcomeEmbed] });
+      const sentMessage = await channel.send({ embeds: [welcomeEmbed] });
+      
+      // Add a reaction using the random emoji
+      await sentMessage.react(randomEmoji);
       console.log('guildMemberAdd event triggered. Member');
     }
     
