@@ -36,6 +36,7 @@ module.exports = {
             await interaction.reply({
                 content: 'Please select a channel for goodbye messages:',
                 components: [actionRow],
+                ephemeral: true,
             });
 
             // Listen for the selection made by the user
@@ -55,7 +56,7 @@ module.exports = {
                         .setDescription(`You've selected ${selectedChannel.name} as the goodbye channel!`);
 
                     // Update the interaction with the embed
-                    await interaction.editReply({ content: '', embeds: [embed], components: [] });
+                    await interaction.editReply({ content: '', embeds: [embed], components: [], ephemeral: true });
                     collector.stop();
 
                     const channelID = selectedChannel.id;
