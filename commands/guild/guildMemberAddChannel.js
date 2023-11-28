@@ -8,6 +8,18 @@ module.exports = {
         .setDescription('Text channel selection for welcome embeds'),
 
     async execute(interaction) {
+        // for Command Permission Denied 
+        if (!interaction.member.roles.cache.some((role) => role.name === 'Admin')) 
+        {
+            const embed = new EmbedBuilder()
+            .setColor('#ff0000')
+            .setTitle('Permission Denied')
+            .setDescription(`Sorry, you do not have the access to use the \`${interaction.commandName}\` command.`)
+            .setTimestamp();
+            await interaction.reply({ embeds: [embed], ephemeral: true });
+            return false;
+          }      
+        // main code block starts from here
         try {
             const guild = interaction.guild;
             if (!guild) return console.log('Unable to fetch guild.');
