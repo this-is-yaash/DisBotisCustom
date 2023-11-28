@@ -1,89 +1,88 @@
-const { SlashCommandBuilder, ChannelType, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, ChannelType, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, EmbedBuilder } = require('discord.js')
 
-const { updateConfigFile } = require('../guild/add/writeAddID');
+const { updateConfigFile } = require('../guild/add/writeAddID')
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('welcome')
-        .setDescription('Text channel selection for welcome embeds'),
+  data: new SlashCommandBuilder()
+    .setName('welcome')
+    .setDescription('Text channel selection for welcome embeds'),
 
-    async execute(interaction) {
-        // for Command Permission Denied 
-        if (!interaction.member.roles.cache.some((role) => role.name === 'Admin')) 
-        {
-            const embed = new EmbedBuilder()
-            .setColor('#ff0000')
-            .setTitle('Permission Denied')
-            .setDescription(`Sorry, you do not have the access to use the \`${interaction.commandName}\` command.`)
-            .setTimestamp();
-            await interaction.reply({ embeds: [embed], ephemeral: true });
-            return false;
-          }      
-        // main code block starts from here
-        try {
-            const guild = interaction.guild;
-            if (!guild) return console.log('Unable to fetch guild.');
+  async execute (interaction) {
+    // for Command Permission Denied
+    if (!interaction.member.roles.cache.some((role) => role.name === 'Admin')) {
+      const embed = new EmbedBuilder()
+        .setColor('#ff0000')
+        .setTitle('Permission Denied')
+        .setDescription(`Sorry, you do not have the access to use the \`${interaction.commandName}\` command.`)
+        .setTimestamp()
+      await interaction.reply({ embeds: [embed], ephemeral: true })
+      return false
+    }
+    // main code block starts from here
+    try {
+      const guild = interaction.guild
+      if (!guild) return console.log('Unable to fetch guild.')
 
-            const textChannels = guild.channels.cache.filter(channel => channel.type === ChannelType.GuildText);
-            if (textChannels.size === 0) return console.log('No text channels found.');
+      const textChannels = guild.channels.cache.filter(channel => channel.type === ChannelType.GuildText)
+      if (textChannels.size === 0) return console.log('No text channels found.')
 
-            // Create options for the select menu based on text channels
-            const channelOptions = textChannels.map(channel => {
-                return new StringSelectMenuOptionBuilder()
-                    .setLabel(channel.name)
-                    .setDescription(`#${channel.name}`)
-                    .setValue(channel.id);
-            });
+      // Create options for the select menu based on text channels
+      const channelOptions = textChannels.map(channel => {
+        return new StringSelectMenuOptionBuilder()
+          .setLabel(channel.name)
+          .setDescription(`#${channel.name}`)
+          .setValue(channel.id)
+      })
 
-            // Create a select menu with the text channel options
-            const selectMenu = new StringSelectMenuBuilder()
-                .setCustomId('welcomeChannelSelector')
-                .setPlaceholder('Select a channel')
-                .addOptions(channelOptions);
+      // Create a select menu with the text channel options
+      const selectMenu = new StringSelectMenuBuilder()
+        .setCustomId('welcomeChannelSelector')
+        .setPlaceholder('Select a channel')
+        .addOptions(channelOptions)
 
-            // Add the select menu to an action row
-            const actionRow = new ActionRowBuilder().addComponents(selectMenu);
+      // Add the select menu to an action row
+      const actionRow = new ActionRowBuilder().addComponents(selectMenu)
 
-            // Reply to the interaction with the select menu
-            await interaction.reply({
-                content: 'Please select a channel for welcome messages:',
-                components: [actionRow],
-                ephemeral: true
-            });
+      // Reply to the interaction with the select menu
+      await interaction.reply({
+        content: 'Please select a channel for welcome messages:',
+        components: [actionRow],
+        ephemeral: true
+      })
 
-            // Listen for the selection made by the user
-            const filter = i => i.customId === 'welcomeChannelSelector' && i.user.id === interaction.user.id;
-            const collector = interaction.channel.createMessageComponentCollector({ filter, time: 15000 });
+      // Listen for the selection made by the user
+      const filter = i => i.customId === 'welcomeChannelSelector' && i.user.id === interaction.user.id
+      const collector = interaction.channel.createMessageComponentCollector({ filter, time: 15000 })
 
-            collector.on('collect', async collected => {
-                const selectedChannel = textChannels.find(channel => channel.id === collected.values[0]);
-                if (!selectedChannel) {
-                    await interaction.followUp('Error: Invalid channel selection.');
-                } else {
-                    console.log(`Selected channel ID: ${selectedChannel.id}`); // Logging the selected channel ID
+      collector.on('collect', async collected => {
+        const selectedChannel = textChannels.find(channel => channel.id === collected.values[0])
+        if (!selectedChannel) {
+          await interaction.followUp('Error: Invalid channel selection.')
+        } else {
+          console.log(`Selected channel ID: ${selectedChannel.id}`) // Logging the selected channel ID
 
-                    const embed = new EmbedBuilder()
-                        .setColor('#00ff00')
-                        .setTitle('Channel Selected')
-                        .setDescription(`You've selected ${selectedChannel.name} as the welcome channel!`);
+          const embed = new EmbedBuilder()
+            .setColor('#00ff00')
+            .setTitle('Channel Selected')
+            .setDescription(`You've selected ${selectedChannel.name} as the welcome channel!`)
 
-                    // Update the interaction with the embed
-                    await interaction.editReply({ content: '', embeds: [embed], components: [], ephemeral: true, });
-                    collector.stop();
+          // Update the interaction with the embed
+          await interaction.editReply({ content: '', embeds: [embed], components: [], ephemeral: true })
+          collector.stop()
 
-                    const channelID = selectedChannel.id;
-                    // Call the function from writeAddID.js to write the channel ID to a file
-                    updateConfigFile(channelID);
-                }
-            });
-
-            collector.on('end', collected => {
-                if (collected.size === 0) {
-                    interaction.followUp('Channel selection timed out.');
-                }
-            });
-        } catch (error) {
-            console.error('Error occurred:', error);
+          const channelID = selectedChannel.id
+          // Call the function from writeAddID.js to write the channel ID to a file
+          updateConfigFile(channelID)
         }
-    },
-};
+      })
+
+      collector.on('end', collected => {
+        if (collected.size === 0) {
+          interaction.followUp('Channel selection timed out.')
+        }
+      })
+    } catch (error) {
+      console.error('Error occurred:', error)
+    }
+  }
+}

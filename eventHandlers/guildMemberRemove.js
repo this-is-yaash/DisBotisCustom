@@ -1,7 +1,7 @@
-const { EmbedBuilder } = require('discord.js');
-const config = require('../config.json');
+const { EmbedBuilder } = require('discord.js')
+const config = require('../config.json')
 
-require('dotenv').config(); // Load environment variables from a .env file
+require('dotenv').config() // Load environment variables from a .env file
 
 const farewells = [
   '👋 Farewell, friend. We\'ll miss you!',
@@ -18,18 +18,17 @@ const farewells = [
   '📸 The memories we shared will linger even after your departure. Farewell!',
   '👋 A fond farewell to an amazing member. Goodbye!',
   '🌟 Your contributions were invaluable. Best of luck in your next journey. Farewell!',
-  '🍃 May the wind be at your back as you embark on new endeavors. Goodbye!',
-];
+  '🍃 May the wind be at your back as you embark on new endeavors. Goodbye!'
+]
 
-const emojis = ['👋', '🌟', '😢', '🌈', '🚀', '🛣️', '🤗', '😔', '🌷', '📸'];
+const emojis = ['👋', '🌟', '😢', '🌈', '🚀', '🛣️', '🤗', '😔', '🌷', '📸']
 
 module.exports = {
   execute: async (member) => {
-    const randomFarewell = farewells[Math.floor(Math.random() * farewells.length)];
+    const randomFarewell = farewells[Math.floor(Math.random() * farewells.length)]
 
     // Select a random emoji from the array
-    const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-
+    const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)]
 
     const goodbyeEmbed = new EmbedBuilder()
       .setColor('#ff0000')
@@ -45,13 +44,13 @@ module.exports = {
       .setImage('https://img.freepik.com/free-vector/goodbye-good-luck-lettering-background_23-2147979463.jpg?w=826&t=st=1694888315~exp=1694888915~hmac=588717deb26330a44808516f9daecf30eb10d6a422173a1327526bead8a835fa')
 
     // Send the embed to a specific channel in your server
-  const channel = member.guild.channels.cache.get(config.goodbye_id);
-  if (channel) {
-    const sentMessage = await channel.send({ embeds: [goodbyeEmbed] });
-    
-    // Add a reaction using the random emoji
-    await sentMessage.react(randomEmoji);
-    console.log('guildMemberRemove event triggered. Member:');
+    const channel = member.guild.channels.cache.get(config.goodbye_id)
+    if (channel) {
+      const sentMessage = await channel.send({ embeds: [goodbyeEmbed] })
+
+      // Add a reaction using the random emoji
+      await sentMessage.react(randomEmoji)
+      console.log('guildMemberRemove event triggered. Member:')
+    }
   }
-  },
-};
+}

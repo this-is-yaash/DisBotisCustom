@@ -1,27 +1,27 @@
-const { StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder } = require('discord.js');
+const { StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder } = require('discord.js')
 
-function generateRoleSelectMenu(roles) {
+function generateRoleSelectMenu (roles) {
   const roleOptions = roles.map((role, index) => ({
     label: role,
-    value: `role_${index}`,
-  }));
+    value: `role_${index}`
+  }))
 
-  const selectOptions = roleOptions.map((option) => 
+  const selectOptions = roleOptions.map((option) =>
     new StringSelectMenuOptionBuilder()
       .setLabel(option.label)
       .setValue(option.value)
-  );
+  )
 
   const selectMenu = new StringSelectMenuBuilder()
     .setCustomId('roleMenu')
     .setPlaceholder('Select a role')
-    .addOptions(selectOptions);
+    .addOptions(selectOptions)
 
-  const row = new ActionRowBuilder().addComponents(selectMenu);
+  const row = new ActionRowBuilder().addComponents(selectMenu)
 
-  return row;
+  return row
 }
 
 module.exports = {
-  generateRoleSelectMenu,
-};
+  generateRoleSelectMenu
+}
