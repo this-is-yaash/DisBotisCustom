@@ -1,8 +1,27 @@
-const { ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
+const { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ComponentType } = require('discord.js');
 
-let selectedGame =[]
-console.log(selectedGame)
+// console.log(selectedGame)
+
+const games =[
+    {
+        label: "Valorant",
+        description: "5v5 PvP",
+        value: "VALO"
+    },
+    {
+        label: "Minecraft",
+        description: "Survival Sandbox",
+        value: "MC"
+    },
+    {
+        label: "GTA V",
+        description: "Open-World",
+        value: "GTA V"
+    }
+]
+
 module.exports = {
+
     inviteCommandEmbed: async (interaction, client) => {
         try {
             const menu = new ActionRowBuilder()
@@ -10,49 +29,34 @@ module.exports = {
                     new StringSelectMenuBuilder()
                         .setCustomId('select_game')          
                         .setPlaceholder("Select Game")
-                        .addOptions([
-                            {
-                                label: "Valorant",
-                                description: "5v5 PvP",
-                                value: "VALO"
-                            },
-                            {
-                                label: "Minecraft",
-                                description: "Survival Sandbox",
-                                value: "MC"
-                            },
-                            {
-                                label: "GTA V",
-                                description: "Open-World",
-                                value: "GTA V"
-                            }
-                        ])
+                        .addOptions(
+                            games.map((game) =>
+                            new StringSelectMenuOptionBuilder()
+                                .setLabel(game.label)
+                                .setDescription(game.description)
+                                .setValue(game.value)
+                            )
+                        )
                 );
-            await interaction.reply({ content: "Select Game", components: [menu] });
-
-            // Collect the interaction for the select menu
-            const collector = interaction.channel.createMessageComponentCollector({ componentType: 'SELECT_MENU', time: 15000 });
-
-            collector.on('collect', async (selectInteraction) => {
-                if (selectInteraction.isSelectMenu()) {
-                    const selectedOption = selectInteraction.values[0]; // Assuming only one value can be selected
-                    selectedValues.push(selectedOption); // Store the selected value in the array
-                    await selectInteraction.reply(`You selected ${selectedOption}`);
-                    // You can perform further processing here based on the selectedOption value
-                }
-            });
+            await interaction.reply({ content: "Select Game", components: [menu], ephemeral: true });
+            const collector = interaction.channel.createMessageComponentCollector({
+                componentType: ComponentType.StringSelect,
+                filter: (i) => i.user.id === interaction.user.id && i.customId === 'select_game',
+                time: 10000,
+            })
+            collector.on('collect', (selectInteraction) => {
+                console.log(selectInteraction.values);
+                // Do something with the selected values here
+                interaction.deleteReply({ content: "Selected", ephemeral: true })
+            })
 
             collector.on('end', (collected) => {
                 console.log(`Collected ${collected.size} interactions`);
-                // You can perform additional actions or post-process the collected values here if needed
-            });
-
+                // Perform additional actions or post-processing if needed
+            })
         } catch (error) {
             console.error('Error fetching commands:', error);
             interaction.reply({ content: 'Error fetching commands.', ephemeral: true });
         }
     },
-    getSelectedValues: () => {
-        return selectedValues;
-    }
 };
