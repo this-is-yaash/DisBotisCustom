@@ -13,16 +13,13 @@ module.exports = {
 
         return userSelect;
     },
-
     createUserCollector: (interaction) => {
         const userCollector = interaction.channel.createMessageComponentCollector({
             componentType: ComponentType.SELECT_MENU,
             filter: (i) => i.user.id === interaction.user.id && i.customId === 'users',
             time: 10000,
         });
-
         const selectedUsers = []; // Array to store selected user IDs
-
         userCollector.on('collect', (userInteraction) => {
             const userIds = userInteraction.values; // Get the selected user IDs
             userIds.forEach((userId) => {

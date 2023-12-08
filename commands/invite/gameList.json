@@ -1,0 +1,15 @@
+{
+    "games": [
+      {
+        "label": "Valorant",
+        "description": "5v5 PvP",
+        "value": "VALO"
+      },
+      {
+        "label": "CS:GO",
+        "description": "Competitive FPS",
+        "value": "CSGO"
+      }
+    ]
+  }
+  
