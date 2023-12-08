@@ -1,34 +1,41 @@
-const { ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js')
+const { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ComponentType } = require('discord.js');
 
-module.exports={
-    inviteSelectGame: async(interaction, client) => {
-        try{
+const games = [
+    {
+        label: "Valorant",
+        description: "5v5 PvP",
+        value: "VALO"
+    },
+    // ... (other game options)
+];
 
-            const menu = new ActionRowBuilder()
+module.exports = {
+    createGameMenu: async (interaction) => {
+        const gameMenu = new ActionRowBuilder()
             .addComponents(
                 new StringSelectMenuBuilder()
-                .setCustomId('game_selection_menu')
-                .setPlaceholder("Select Game")
-                .addOptions(
-            {
-            label:"first",
-            description: "first test description",
-            value: "OPTION 1",
-            },
-            {
-                label: "second",
-                description:"second test description",
-                value: "OPTION 2"
-            }
-            )
-            )
-            await interaction.reply({content: "This is reply interaction", components:[menu], ephemeral: true})
-        } catch (error){
-            console.log(error)
-            await interaction.reply({content: "Error Fetching Dropdown", ephemeral: true })
-        }
+                    .setCustomId('select_game')
+                    .setPlaceholder("Select Game")
+                    .addOptions(
+                        games.map((game) =>
+                            new StringSelectMenuOptionBuilder()
+                                .setLabel(game.label)
+                                .setDescription(game.description)
+                                .setValue(game.value)
+                        )
+                    )
+            );
 
+        return gameMenu;
+    },
+
+    createGameCollector: (interaction) => {
+        const gameCollector = interaction.channel.createMessageComponentCollector({
+            componentType: ComponentType.SELECT_MENU,
+            filter: (i) => i.user.id === interaction.user.id && i.customId === 'select_game',
+            time: 10000,
+        });
+
+        return gameCollector;
     }
-}
-
-
+};
