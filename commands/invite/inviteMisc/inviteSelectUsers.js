@@ -21,6 +21,20 @@ module.exports = {
             time: 10000,
         });
 
+        const selectedUsers = []; // Array to store selected user IDs
+
+        userCollector.on('collect', (userInteraction) => {
+            const userIds = userInteraction.values; // Get the selected user IDs
+            userIds.forEach((userId) => {
+                selectedUsers.push(userId); // Store the selected user IDs
+            });
+        });
+
+        userCollector.on('end', (collected) => {
+            // Perform any additional actions after user selection ends
+            console.log(`Collected ${selectedUsers.length} user IDs: ${selectedUsers}`);
+        });
+
         return userCollector;
     }
 };

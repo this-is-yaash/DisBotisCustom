@@ -1,10 +1,11 @@
 const inviteSelectGame = require('./inviteSelectGame');
 const inviteSelectUsers = require('./inviteSelectUsers');
 
+
 module.exports = {
     selectedGame: "", // Variable to store selected game globally
 
-    inviteCommandEmbed: async (interaction, client) => {
+    inviteCommandEmbed: async (interaction, client, users) => {
         try {
             const gameMenu = await inviteSelectGame.createGameMenu(interaction);
             await interaction.reply({ content: "Select Game", components: [gameMenu] });
